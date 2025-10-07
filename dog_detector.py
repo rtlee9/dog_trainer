@@ -7,6 +7,7 @@ from gpiozero import AngularServo
 from gpiozero.pins.lgpio import LGPIOFactory
 
 from time import sleep
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -194,6 +195,7 @@ if __name__ == "__main__":
         last_results = parse_detections(picam2.capture_metadata())
         for result in last_results:
             if result.is_label(args.object):
+                # activate servo
                 print('Woof!')
                 servo = AngularServo(23, min_pulse_width=0.0006, max_pulse_width=0.0023)
                 servo.angle = 50
@@ -202,3 +204,7 @@ if __name__ == "__main__":
                 sleep(1)
                 servo.close()
 
+                # save the picture
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"{args.object}_detected_{timestamp}.jpg"
+                picam2.capture_file(filename)
